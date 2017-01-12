@@ -27,6 +27,7 @@ typedef struct  {
 
 static const UvisorBoxAclItem acl[] = {
     /* This secure box is pure software; no secure peripherals are required. */
+    {CRPT,                          sizeof(*CRPT),     UVISOR_TACLDEF_PERIPH}
 };
 
 static void aes_box_main(const void *);
@@ -42,6 +43,10 @@ UVISOR_BOX_HEAPSIZE(8192);
 UVISOR_BOX_MAIN(aes_box_main, osPriorityNormal, UVISOR_BOX_STACK_SIZE);
 UVISOR_BOX_CONFIG(aes_box, acl, UVISOR_BOX_STACK_SIZE, aes_box_context);
 
+#ifdef __uvisor_ctx
+#define uvisor_ctx ((aes_box_context *) __uvisor_ctx)
+#endif
+
 /* RPC gateways */
 UVISOR_BOX_RPC_GATEWAY_SYNC(aes_box, secure_aes_encrypt_cbc, aes_box_encrypt_cbc, int, size_t, unsigned char iv[16], const unsigned char *, unsigned char *);
 UVISOR_BOX_RPC_GATEWAY_ASYNC(aes_box, secure_aes_encrypt_cbc_async, aes_box_encrypt_cbc, int, size_t, unsigned char iv[16], const unsigned char *, unsigned char *);
@@ -53,6 +58,16 @@ unsigned char (*aes_key_disclosed)[32];
 /* NOTE: AES encrypt/decrypt threads call into mbedtls_aes_xxx functions which need 2KB more stack size. */
 #define AES_THREAD_STACK_SIZE   4096
     
+#if (osCMSIS >= 0x20000U)
+/* A thin wrapper around aes_box_decrypt_run that accepts and ignores a context. This avoids a
+ * cast, as mbed's Thread and RTX's osThreadContextNew operate on differently
+ * typed thread functions. */
+static void aes_box_decrypt_run_context(void *)
+{
+    aes_box_decrypt_run();
+}
+#endif
+
 static void aes_box_main(const void *)
 {
     /* Allocate serial port to ensure that code in this secure box won't touch
@@ -86,6 +101,18 @@ static void aes_box_main(const void *)
         uvisor_error(USER_NOT_ALLOWED);
     }
     /* Prepare the thread definition structure. */
+#if (osCMSIS >= 0x20000U)
+    osThreadAttr_t thread_attr = {0};
+    os_thread_t thread_def = {0};
+    thread_attr.stack_size = AES_THREAD_STACK_SIZE;
+    /* Allocate the stack inside the page allocator! */
+    thread_attr.stack_mem = (uint32_t *) secure_malloc(alloc, AES_THREAD_STACK_SIZE);
+    thread_attr.priority = osPriorityNormal;
+    thread_attr.cb_size = sizeof(thread_def);
+    thread_attr.cb_mem = &thread_def;
+    /* Create a thread with the page allocator as heap. */
+    osThreadContextNew(&aes_box_decrypt_run_context, NULL, &thread_attr, alloc);
+#else
     osThreadDef_t thread_def;
     thread_def.stacksize = AES_THREAD_STACK_SIZE;
     /* Allocate the stack inside the page allocator! */
@@ -94,7 +121,7 @@ static void aes_box_main(const void *)
     thread_def.pthread = (void (*)(const void *)) &aes_box_decrypt_run;
     /* Create a thread with the page allocator as heap. */
     osThreadContextCreate(&thread_def, NULL, alloc);
-    
+#endif
     
     size_t count = 0;
     

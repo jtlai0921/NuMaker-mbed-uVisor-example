@@ -53,6 +53,10 @@ UVISOR_BOX_HEAPSIZE(2048);
 UVISOR_BOX_MAIN(aes_client_box_main, osPriorityNormal, UVISOR_BOX_STACK_SIZE);
 UVISOR_BOX_CONFIG(aes_client_box, acl, UVISOR_BOX_STACK_SIZE, aes_client_box_context);
 
+#ifdef __uvisor_ctx
+#define uvisor_ctx ((aes_client_box_context *) __uvisor_ctx)
+#endif
+
 static void aes_client_box_main(const void *)
 {
     /* Allocate serial port to ensure that code in this secure box won't touch

@@ -25,7 +25,9 @@ UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
 UVISOR_SET_PAGE_HEAP(8*1024, 1);
 
 /* FIXME: Add missing uVisor box .bss due to alignment */
-uint8_t __attribute__((section(".keep.uvisor.bss.boxes"), aligned(32))) _uvisor_bss_reserved[8192];
+#if defined(TARGET_NUMAKER_PFM_M487)
+uint8_t __attribute__((section(".keep.uvisor.bss.boxes"), aligned(32))) __boxes_overhead[40832];
+#endif
 
 int main(void)
 {

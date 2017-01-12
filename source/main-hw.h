@@ -44,8 +44,8 @@
 #define LED_ON          false
 #define LED_OFF         true
 
-#define MAIN_LED        LED_BLUE
-#define SNOOP_LED       LED_RED
+#define MAIN_LED        LED2
+#define SNOOP_LED       LED3
 
 #define SNOOP_BTN       SW2
     
@@ -53,7 +53,7 @@
     static const UvisorBoxAclItem acl_list_name[] = {                                   \
         {SYS,                           sizeof(*SYS),       UVISOR_TACLDEF_PERIPH},     \
         {CLK,                           sizeof(*CLK),       UVISOR_TACLDEF_PERIPH},     \
-        {UART1,                         sizeof(*UART1),     UVISOR_TACLDEF_PERIPH},     \
+        {UART0,                         sizeof(*UART0),     UVISOR_TACLDEF_PERIPH},     \
         {GPA,                           sizeof(*GPA),       UVISOR_TACLDEF_PERIPH},     \
         {GPB,                           sizeof(*GPB),       UVISOR_TACLDEF_PERIPH},     \
         {GPC,                           sizeof(*GPC),       UVISOR_TACLDEF_PERIPH},     \
@@ -62,7 +62,7 @@
         {GPF,                           sizeof(*GPF),       UVISOR_TACLDEF_PERIPH},     \
         {GPG,                           sizeof(*GPG),       UVISOR_TACLDEF_PERIPH},     \
         {GPH,                           sizeof(*GPH),       UVISOR_TACLDEF_PERIPH},     \
-        {(void *) GPIO_PIN_DATA_BASE,   0x1D0,              UVISOR_TACLDEF_PERIPH},     \
+        {(void *) GPIO_PIN_DATA_BASE,   0x200,              UVISOR_TACLDEF_PERIPH},     \
         {TIMER0,                        sizeof(*TIMER0),    UVISOR_TACLDEF_PERIPH},     \
         {TIMER1,                        sizeof(*TIMER1),    UVISOR_TACLDEF_PERIPH},     \
         {TIMER2,                        sizeof(*TIMER2),    UVISOR_TACLDEF_PERIPH},     \

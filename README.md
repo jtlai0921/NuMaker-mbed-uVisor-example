@@ -1,24 +1,26 @@
 # NuMaker mbed uVisor Example
 
-This is a simple example to show how to use several uVisor APIs to build a secured application.
+This is a simple example to show how to build a secured application with uVisor on Nuvoton Mbed Enabled targets.
+Please refer to [Arm uVisor](https://github.com/ARMmbed/uvisor) for its details.
 
 This demo contains three secure boxes:
 
+- Main Box (insecure box 0) does nothing.
 - AES Box, which provides AES cipher functions through RPC, with cipher key closed.
-- AES Client Box, which is client of above and cannot touch the cipher key.
-- Snoop Box, which attempts to snoop the cipher key via IRQ.
+- AES Client Box, which does cipher operations through about box exported RPC.
+- Snoop Box, which attempts to snoop the cipher key triggered by pushing a button. As it happens, system will halt.
 
-The insecure box 0 (main box) does nothing.
+## Support platforms
+
+- NuMaker-PFM-M487
 
 ## Building
-
-The example currently only works on NUMAKER_PFM_M487 with the GCC_ARM toolchain.
 
 ### Release
 
 For a release build, please enter:
 
-```bash
+```
 $ mbed compile -m NUMAKER_PFM_M487 -t GCC_ARM --app-config mbed_app.json -c
 ```
 
@@ -26,11 +28,15 @@ You will find the resulting binary in `BUILD/NUMAKER_PFM_M487/GCC_ARM/mbed-os-ex
 
 ### Debug
 
-On most targets, uVisor debug message is output through semihosting. When a debugger is connected, you can observe debug output from uVisor.
-Please note that these messages are sent through semihosting, which halts the program execution if a debugger is not connected. For more information please read the [Debugging uVisor on mbed OS](https://github.com/ARMmbed/uvisor/blob/master/docs/api/DEBUGGING.md) guide.
-On NUMAKER_PFM_M487 target, uVisor debug message is output through USB VCOM. You can observe debug output from uVisor as usual program.
-To build a debug version of the program:
+For a debug build, please enter:
 
-```bash
-$ mbed compile -m NUMAKER_PFM_M487 -t GCC_ARM --app-config mbed_app.json --profile mbed-os/tools/profiles/debug.json -c
 ```
+$ mbed compile -m NUMAKER_PFM_M487 -t GCC_ARM --app-config mbed_app.json --profile debug -c
+```
+
+#### uVisor core debug message
+In debug version, uVisor core outputs debug message via semihosting. So it is necessary to connect to Debugger for running debug version.
+
+#### Build with GCC; debug with Keil uVision
+Currently only GCC_ARM toolchain is supported to build uVisor program. If you have Keil uVision 5 or afterwards installed, you could debug through the
+[Build with GCC and debug with Keil uVision](BUILD_GCC_DEBUG_UVISION.md) guide.

@@ -32,9 +32,13 @@ static void snoop_box_main(const void *);
 static void snoop_box_irq(void);
 
 UVISOR_BOX_NAMESPACE(NULL);
-UVISOR_BOX_HEAPSIZE(2048);
+UVISOR_BOX_HEAPSIZE(3072);
 UVISOR_BOX_MAIN(snoop_box_main, osPriorityNormal, UVISOR_BOX_STACK_SIZE);
 UVISOR_BOX_CONFIG(snoop_box, acl, UVISOR_BOX_STACK_SIZE, snoop_box_context);
+
+#ifdef __uvisor_ctx
+#define uvisor_ctx ((snoop_box_context *) __uvisor_ctx)
+#endif
 
 static void snoop_box_main(const void *)
 {
