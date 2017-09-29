@@ -34,8 +34,8 @@ static void aes_box_main(const void *);
 static void aes_box_encrypt_run(void);
 static void aes_box_decrypt_run(void);
 /* RPC target functions */
-static int aes_box_encrypt_cbc(size_t length, unsigned char iv[16], const unsigned char *input, unsigned char *output);
-static int aes_box_decrypt_cbc(size_t length, unsigned char iv[16], const unsigned char *input, unsigned char *output);
+static int aes_box_encrypt_cbc(size_t length, unsigned char *iv, const unsigned char *input, unsigned char *output);
+static int aes_box_decrypt_cbc(size_t length, unsigned char *iv, const unsigned char *input, unsigned char *output);
 
 /* Box configuration */
 UVISOR_BOX_NAMESPACE(NULL);
@@ -48,10 +48,10 @@ UVISOR_BOX_CONFIG(aes_box, acl, UVISOR_BOX_STACK_SIZE, aes_box_context);
 #endif
 
 /* RPC gateways */
-UVISOR_BOX_RPC_GATEWAY_SYNC(aes_box, secure_aes_encrypt_cbc, aes_box_encrypt_cbc, int, size_t, unsigned char iv[16], const unsigned char *, unsigned char *);
-UVISOR_BOX_RPC_GATEWAY_ASYNC(aes_box, secure_aes_encrypt_cbc_async, aes_box_encrypt_cbc, int, size_t, unsigned char iv[16], const unsigned char *, unsigned char *);
-UVISOR_BOX_RPC_GATEWAY_SYNC(aes_box, secure_aes_decrypt_cbc, aes_box_decrypt_cbc, int, size_t, unsigned char iv[16], const unsigned char *, unsigned char *);
-UVISOR_BOX_RPC_GATEWAY_ASYNC(aes_box, secure_aes_decrypt_cbc_async, aes_box_decrypt_cbc, int, size_t, unsigned char iv[16], const unsigned char *, unsigned char *);
+UVISOR_BOX_RPC_GATEWAY_SYNC(aes_box, secure_aes_encrypt_cbc, aes_box_encrypt_cbc, int, size_t, unsigned char *, const unsigned char *, unsigned char *);
+UVISOR_BOX_RPC_GATEWAY_ASYNC(aes_box, secure_aes_encrypt_cbc_async, aes_box_encrypt_cbc, int, size_t, unsigned char *, const unsigned char *, unsigned char *);
+UVISOR_BOX_RPC_GATEWAY_SYNC(aes_box, secure_aes_decrypt_cbc, aes_box_decrypt_cbc, int, size_t, unsigned char *, const unsigned char *, unsigned char *);
+UVISOR_BOX_RPC_GATEWAY_ASYNC(aes_box, secure_aes_decrypt_cbc_async, aes_box_decrypt_cbc, int, size_t, unsigned char *, const unsigned char *, unsigned char *);
 
 unsigned char (*aes_key_disclosed)[32];
 
@@ -173,14 +173,14 @@ static void aes_box_decrypt_run(void)
     }
 }
 
-static int aes_box_encrypt_cbc(size_t length, unsigned char iv[16], const unsigned char *input, unsigned char *output)
+static int aes_box_encrypt_cbc(size_t length, unsigned char *iv, const unsigned char *input, unsigned char *output)
 {
     mbedtls_aes_setkey_enc(&uvisor_ctx->aes_ctx, uvisor_ctx->aes_key, sizeof (uvisor_ctx->aes_key) * 8);
     
     return mbedtls_aes_crypt_cbc(&uvisor_ctx->aes_ctx, MBEDTLS_AES_ENCRYPT, length, iv, input, output);
 }
 
-static int aes_box_decrypt_cbc(size_t length, unsigned char iv[16], const unsigned char *input, unsigned char *output)
+static int aes_box_decrypt_cbc(size_t length, unsigned char *iv, const unsigned char *input, unsigned char *output)
 {
     mbedtls_aes_setkey_dec(&uvisor_ctx->aes_ctx, uvisor_ctx->aes_key, sizeof (uvisor_ctx->aes_key) * 8);
     

@@ -38,12 +38,12 @@ static const UvisorBoxAclItem acl[] = {
 static void aes_client_box_main(const void *);
 static int aes_client_box_encrypt_cbc(
                     size_t length,
-                    unsigned char iv[16],
+                    unsigned char *iv,
                     const unsigned char *input,
                     unsigned char *output);
 static int aes_client_box_decrypt_cbc(
                     size_t length,
-                    unsigned char iv[16],
+                    unsigned char *iv,
                     const unsigned char *input,
                     unsigned char *output);
                     
@@ -98,7 +98,7 @@ static void aes_client_box_main(const void *)
 
 static int aes_client_box_encrypt_cbc(
                     size_t length,
-                    unsigned char iv[16],
+                    unsigned char *iv,
                     const unsigned char *input,
                     unsigned char *output)
 {
@@ -120,7 +120,7 @@ static int aes_client_box_encrypt_cbc(
 
 static int aes_client_box_decrypt_cbc(
                     size_t length,
-                    unsigned char iv[16],
+                    unsigned char *iv,
                     const unsigned char *input,
                     unsigned char *output)
 {

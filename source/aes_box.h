@@ -21,24 +21,24 @@
 /* Secure sync/async version of mbedtls_aes_crypt_cbc in encrypt mode with key internally kept */
 UVISOR_EXTERN int (*secure_aes_encrypt_cbc)(
                     size_t length,
-                    unsigned char iv[16],
+                    unsigned char *iv,
                     const unsigned char *input,
                     unsigned char *output);
 UVISOR_EXTERN uvisor_rpc_result_t (*secure_aes_encrypt_cbc_async)(
                                     size_t length,
-                                    unsigned char iv[16],
+                                    unsigned char *iv,
                                     const unsigned char *input,
                                     unsigned char *output);
                     
 /* Secure sync/async version of mbedtls_aes_crypt_cbc in decrypt mode with key internally kept */
 UVISOR_EXTERN int (*secure_aes_decrypt_cbc)(
                     size_t length,
-                    unsigned char iv[16],
+                    unsigned char *iv,
                     const unsigned char *input,
                     unsigned char *output);
 UVISOR_EXTERN uvisor_rpc_result_t (*secure_aes_decrypt_cbc_async)(
                                     size_t length,
-                                    unsigned char iv[16],
+                                    unsigned char *iv,
                                     const unsigned char *input,
                                     unsigned char *output);
 
